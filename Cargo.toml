@@ -1,9 +1,60 @@
 [package]
 name = "nix-extra"
-version = "0.1.0"
+description = "Extra Rust friendly bindings to *nix APIs"
+
+# Cargo bakes in the concept of Semantic Versioning, so make sure you follow some basic rules:
+#   Before you reach 1.0.0, anything goes, but if you make breaking changes, increment the minor version. In Rust, breaking changes include adding fields to structs or variants to enums.
+#   After 1.0.0, only make breaking changes when you increment the major version. Don’t break the build.
+#   After 1.0.0, don’t add any new public API (no new pub anything) in patch-level versions. Always increment the minor version if you add any new pub structs, traits, fields, types, functions, methods or anything else.
+version = "0.17.0"
+
 authors = ["Dubiousjim <dubiousjim@gmail.com>"]
 edition = "2018"
+license = "MIT" # "MIT OR Apache-2.0"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+repository = "https://github.com/dubiousjim/nix-extra"
+# homepage
+# documentation
+
+exclude = [
+  "/ci/*",
+  "/.gitignore",
+  "/target/",
+  "/notes/",
+  "Cargo.lock",
+  "**/*.rs.bk",
+]
+
+publish = false
+readme = "README.md"
+# up to 5 from https://crates.io/category_slugs
+categories = ["os::unix-apis"]
+# up to 5, matching [A-Za-z][A-Za-z0-9_-]{0,19}
+# keywords = ["gamedev", "graphics"]
 
 [dependencies]
+rand = "0.7.3"
+nix = "0.17"
+# sync versions with nix
+libc = { version = "0.2.60", features = [ "extra_traits" ] }
+cfg-if = "0.1.10"
+bitflags = "1.1"
+void = "1.0.2"
+
+[dev-dependencies]
+bytes = "0.4.8"
+lazy_static = "1.2"
+tempfile = "3.0.5"
+# rand = "0.7.3"
+
+# [build-dependencies]
+# os_type = "2.2.0"
+
+
+# [target.'cfg(any(target_os = "android", target_os = "linux"))'.dev-dependencies]
+# caps = "0.3.1"
+
+# [target.'cfg(target_os = "freebsd")'.dev-dependencies]
+# sysctl = "0.1"
+
+#vim: ft=conf
