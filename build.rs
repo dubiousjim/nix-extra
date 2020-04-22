@@ -134,7 +134,7 @@ fn libc_info() -> Option<String> {
   // FIXME
   handle_output(Command::new("ldd").args(&["--version"]), |bytes| {
     println!("output of ldd --version=<{}>", std::str::from_utf8(&bytes).unwrap());
-    Ok(())
+    None
   }).is_some();
 
   which("rustc")
