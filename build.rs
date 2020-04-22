@@ -198,6 +198,7 @@ fn main() {
             println!("cargo:rustc-cfg=GLIBC_ATLEAST_2_{}", i);
           }
         }
+        println!("cargo:rustc-env=CARGO_BUILTFOR={}_{}.{}", "glibc", major, minor);
       } else if version.starts_with("musl libc ") {
         assert!(cfg!(target_env = "musl"));
         let start = version.find("Version").expect("no version") + 8;
@@ -219,6 +220,7 @@ fn main() {
             }
           }
         }
+        println!("cargo:rustc-env=CARGO_BUILTFOR={}_1.{}.{}", "musl", major, minor);
       } else {
         assert!(cfg!(not(target_env = "gnu")), "didn't recognize glibc");
         assert!(cfg!(not(target_env = "musl")), "didn't recognize musl libc");
@@ -235,6 +237,7 @@ fn main() {
       for i in 10..=minor {
         println!("cargo:rustc-cfg=MACOS_ATLEAST_10_{}", i);
       }
+      println!("cargo:rustc-env=CARGO_BUILTFORFOR={}_{}.{}", "mac", major, minor);
     }
     Some(_) => {}
   }
