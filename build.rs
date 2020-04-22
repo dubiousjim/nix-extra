@@ -219,7 +219,7 @@ fn main() {
       if version.starts_with("GNU C Library ") {
         // assert!(cfg!(target_env = "gnu"));
         let start = version.find("version").expect("no version") + 8;
-        let after = version.find(|c| c != b'.' && (c < b'0' || c > b'9')).expect("can't find after version");
+        let after = version.find(|c| c != '.' && (c < '0' || c > '9')).expect("can't find after version");
         let (major, minor) = parse_version(&version[start..after]);
         assert!(
           major > 2 || (major == 2 && minor >= 15),
