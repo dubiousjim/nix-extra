@@ -131,18 +131,19 @@ fn which(bin: &str) -> Option<Vec<u8>> {
 }
 
 fn libc_info() -> Option<String> {
-  // FIXME
+  /*
   let _: Option<()> = handle_output(Command::new("ldd").args(&["--version"]), |bytes| {
     println!("output of ldd --version=<{}>", std::str::from_utf8(&bytes).unwrap());
     None
   });
+  */
 
   which("rustc")
     .and_then(|rustc| {
-      println!("location of rustc={:?}", std::str::from_utf8(&rustc).unwrap()); // FIXME
+      // println!("location of rustc={:?}", std::str::from_utf8(&rustc).unwrap()); // FIXME
       let rustc: &std::ffi::OsStr = std::os::unix::ffi::OsStrExt::from_bytes(&rustc);
       handle_output(Command::new("ldd").args(&[rustc]), |bytes| {
-        println!("output of ldd rustc={:?}", std::str::from_utf8(&bytes).unwrap()); // FIXME
+        // println!("output of ldd rustc={:?}", std::str::from_utf8(&bytes).unwrap()); // FIXME
         let mut lines = bytes.split(|c| *c == 10 || *c == 13);
         loop {
           match lines.next() {
@@ -157,10 +158,10 @@ fn libc_info() -> Option<String> {
     })
     // if ldd wasn't patched, can skip preceding and just replace libc below with "ldd"
     .and_then(|libc| {
-      println!("loc of libc={:?}", std::str::from_utf8(&libc).unwrap()); // FIXME
+      // println!("loc of libc={:?}", std::str::from_utf8(&libc).unwrap()); // FIXME
       let libc: &std::ffi::OsStr = std::os::unix::ffi::OsStrExt::from_bytes(&libc);
       handle_output(Command::new(libc).args(&["--version"]), |bytes| {
-        println!("output of libc --version=<{}>", std::str::from_utf8(&bytes).unwrap()); // FIXME
+        // println!("output of libc --version=<{}>", std::str::from_utf8(&bytes).unwrap()); // FIXME
         String::from_utf8(bytes).ok()
       })
     })
@@ -212,6 +213,9 @@ fn main() {
     _ => {}
   }
   if cfg!(target_os = "linux") {
+// ldd --version: ldd (Ubuntu GLIBC 2.23-0ubuntu11) 2.23\n ...
+// libc --version: GNU C Library (Ubuntu GLIBC 2.23-0ubuntu11) stable release version 2.23, ...
+
     if let Some(version) = libc_info() {
       if version.starts_with("GNU C Library (GNU libc) ") {
         assert!(cfg!(target_env = "gnu"));
@@ -252,9 +256,10 @@ fn main() {
         }
         println!("cargo:rustc-env=CARGO_BUILTFOR=musl_1.{}.{}", major, minor);
       } else {
-        assert!(cfg!(not(target_env = "gnu")), "didn't recognize glibc");
-        assert!(cfg!(not(target_env = "musl")), "didn't recognize musl libc");
+        // assert!(cfg!(not(target_env = "gnu")), "didn't recognize glibc");
+        // assert!(cfg!(not(target_env = "musl")), "didn't recognize musl libc");
         println!("cargo:rustc-env=CARGO_BUILTFOR=unknown_libc");
+        println!("libc_info={:?}", version); // FIXME
       }
       // } else {
       //  println!("cargo:rustc-env=CARGO_BUILTFOR=libc_info_was_None");
