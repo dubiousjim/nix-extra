@@ -40,6 +40,7 @@ mod chown;
 mod mkdir;
 mod open;
 // mod scratch;
+#[cfg(not(target_env = "musl"))]
 mod stat;
 mod temp;
 mod time;
@@ -49,6 +50,7 @@ pub use chown::*;
 pub use mkdir::*;
 pub use open::*;
 // pub use scratch::*;
+#[cfg(not(target_env = "musl"))]
 pub use stat::*;
 pub use temp::*;
 pub use time::*;
