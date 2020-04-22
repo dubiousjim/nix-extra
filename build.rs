@@ -237,7 +237,7 @@ fn main() {
       for i in 10..=minor {
         println!("cargo:rustc-cfg=MACOS_ATLEAST_10_{}", i);
       }
-      println!("cargo:rustc-env=CARGO_BUILTFORFOR={}_{}.{}", "mac", major, minor);
+      println!("cargo:rustc-env=CARGO_BUILTFOR={}_{}.{}", "mac", major, minor);
     }
     Some(_) => {}
   }
