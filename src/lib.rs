@@ -67,6 +67,6 @@ mod tests {
     eprintln!("Running under musl");
     #[cfg(target_os = "mac")]
     eprintln!("Running under mac");
-    eprintln!("CARGO_BUILD={}", env!("CARGO_BUILTFOR"));
+    eprintln!("CARGO_BUILTFOR={}", env!("CARGO_BUILTFOR"));
   }
 }

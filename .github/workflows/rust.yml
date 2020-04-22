@@ -108,21 +108,21 @@ jobs:
       # TODO make warnings fail?
       run: cargo build --verbose --all-targets
 
-    - name: Test debug
-      if: matrix.config.kind == 'test_debug'
-      run: cargo test --verbose --all-targets -- --nocapture
-
     - name: Build musl
       if: matrix.config.kind == 'test_musl'
       run: cargo build --verbose --target x86_64-unknown-linux-musl
 
-    - name: Test musl
-      if: matrix.config.kind == 'test_musl'
-      run: cargo test --verbose --target x86_64-unknown-linux-musl -- --nocapture
-
     - name: Build release
       if: matrix.config.kind == 'test_release'
       run: cargo build --release --verbose --all-targets
+
+    - name: Test debug
+      if: matrix.config.kind == 'test_debug'
+      run: cargo test --verbose --all-targets -- --nocapture
+
+    - name: Test musl
+      if: matrix.config.kind == 'test_musl'
+      run: cargo test --verbose --target x86_64-unknown-linux-musl -- --nocapture
 
     - name: Test release
       if: matrix.config.kind == 'test_release'

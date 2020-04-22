@@ -181,7 +181,24 @@ fn main() {
   */
   println!("cargo:rerun-if-changed=build.rs");
   println!("cargo:rerun-if-changed=src/bytes.rs");
-  println!("cargo:rustc-env=CARGO_BUILTFOR=unknown0");
+  match version_info() {
+    Some((name, Some(ver))) if &name == b"Mac OS X" => {
+      assert!(cfg!(target_os = "macos"));
+      // ver = b"10.10.5"
+      let (major, minor) = parse_version(std::str::from_utf8(&ver).expect("bad utf8 in ProductVersion"));
+      assert!(major == 10 && minor >= 10);
+      for i in 10..=minor {
+        println!("cargo:rustc-cfg=MACOS_ATLEAST_10_{}", i);
+      }
+      println!("cargo:rustc-env=CARGO_BUILTFOR=mac_{}.{}", major, minor);
+    }
+    Some((name, _)) =>
+      println!("cargo:rustc-env=CARGO_BUILTFOR={} os-release", name);
+    }
+    - => {
+      println!("cargo:rustc-env=CARGO_BUILTFOR=unknown");
+    }
+  }
   if cfg!(target_os = "linux") {
     if let Some(version) = libc_info() {
       if version.starts_with("GNU C Library (GNU libc) ") {
@@ -225,24 +242,10 @@ fn main() {
       } else {
         assert!(cfg!(not(target_env = "gnu")), "didn't recognize glibc");
         assert!(cfg!(not(target_env = "musl")), "didn't recognize musl libc");
-        println!("cargo:rustc-env=CARGO_BUILTFOR=unknown1");
+        println!("cargo:rustc-env=CARGO_BUILTFOR=unknown_libc");
       }
     } else {
-      println!("cargo:rustc-env=CARGO_BUILTFOR=unknown2");
+      // println!("cargo:rustc-env=CARGO_BUILTFOR=libc_info_was_None");
     }
-  }
-  match version_info() {
-    None => {}
-    Some((name, Some(ver))) if &name == b"Mac OS X" => {
-      assert!(cfg!(target_os = "macos"));
-      // ver = b"10.10.5"
-      let (major, minor) = parse_version(std::str::from_utf8(&ver).expect("bad utf8 in ProductVersion"));
-      assert!(major == 10 && minor >= 10);
-      for i in 10..=minor {
-        println!("cargo:rustc-cfg=MACOS_ATLEAST_10_{}", i);
-      }
-      println!("cargo:rustc-env=CARGO_BUILTFOR=mac_{}.{}", major, minor);
-    }
-    Some(_) => {}
   }
 }
