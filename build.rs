@@ -181,6 +181,7 @@ fn main() {
   */
   println!("cargo:rerun-if-changed=build.rs");
   println!("cargo:rerun-if-changed=src/bytes.rs");
+  println!("cargo:rustc-env=CARGO_BUILTFOR=unknown0");
   if cfg!(target_os = "linux") {
     if let Some(version) = libc_info() {
       if version.starts_with("GNU C Library (GNU libc) ") {
@@ -224,7 +225,10 @@ fn main() {
       } else {
         assert!(cfg!(not(target_env = "gnu")), "didn't recognize glibc");
         assert!(cfg!(not(target_env = "musl")), "didn't recognize musl libc");
+        println!("cargo:rustc-env=CARGO_BUILTFOR=unknown1");
       }
+    } else {
+      println!("cargo:rustc-env=CARGO_BUILTFOR=unknown2");
     }
   }
   match version_info() {
