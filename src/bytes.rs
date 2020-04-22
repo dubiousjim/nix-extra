@@ -27,25 +27,29 @@ pub fn get_word(value: &[u8], word: usize) -> Option<&[u8]> {
   let mut start = 0;
   let mut after = 0;
   let mut inword = false;
-  let mut words_sofar: usize = 0;
+  let mut words_started: usize = 0;
   for (i, b) in value.iter().enumerate() {
     if b.is_ascii_whitespace() {
       if inword {
         inword = false;
-        if words_sofar == word {
+        if words_started == word {
           return Some(&value[start..after]);
         }
       }
     } else if !inword {
       inword = true;
       start = i;
-      words_sofar += 1;
+      words_started += 1;
     }
     if inword {
-      after = i
+      after = i + 1
     }
   }
-  None
+  if inword {
+    Some(&value[start..after])
+  } else {
+    None
+  }
 }
 
 pub fn get_words<'a>(value: &'a [u8], words: &[usize]) -> Option<Vec<&'a [u8]>> {
@@ -54,27 +58,34 @@ pub fn get_words<'a>(value: &'a [u8], words: &[usize]) -> Option<Vec<&'a [u8]>> 
   let mut inword = false;
   let mut res: Vec<Option<&[u8]>> = vec![None; words.len()];
   let max_word = words.iter().max().expect("requested empty list of words");
-  let mut words_sofar: usize = 0;
+  let mut words_started: usize = 0;
   for (i, b) in value.iter().enumerate() {
     if b.is_ascii_whitespace() {
       if inword {
         inword = false;
         for (ji, jw) in words.iter().enumerate() {
-          if *jw == words_sofar {
+          if *jw == words_started {
             res[ji] = Some(&value[start..after]);
           }
         }
-        if words_sofar == *max_word {
+        if words_started == *max_word {
           break;
         }
       }
     } else if !inword {
       inword = true;
       start = i;
-      words_sofar += 1;
+      words_started += 1;
     }
     if inword {
-      after = i
+      after = i + 1
+    }
+  }
+  if inword && words_started == *max_word {
+    for (ji, jw) in words.iter().enumerate() {
+      if *jw == words_started {
+        res[ji] = Some(&value[start..after]);
+      }
     }
   }
   // let res: Option<Vec<&[u8]>> = res.iter().copied().collect();

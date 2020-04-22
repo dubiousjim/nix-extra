@@ -160,7 +160,11 @@ mod tests {
         .unwrap()
         .as_errno()
         .unwrap(),
-      if cfg!(target_env = "musl") { Errno::EINVAL } else { Errno::ENOENT }, // FIXME
+      if cfg!(target_env = "musl") {
+        Errno::EINVAL
+      } else {
+        Errno::ENOENT
+      }, // FIXME
     );
   }
 
@@ -184,7 +188,11 @@ mod tests {
         .unwrap()
         .as_errno()
         .unwrap(),
-      if cfg!(target_env = "musl") { Errno::EINVAL } else { Errno::ENOENT }, // FIXME
+      if cfg!(target_env = "musl") {
+        Errno::EINVAL
+      } else {
+        Errno::ENOENT
+      }, // FIXME
     );
   }
 

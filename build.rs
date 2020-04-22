@@ -201,7 +201,10 @@ fn main() {
       println!("cargo:rustc-env=CARGO_BUILTFOR=mac_{}.{}", major, minor);
     }
     Some((name, _)) => {
-      println!("cargo:rustc-env=CARGO_BUILTFOR={} os-release", String::from_utf8(name).unwrap());
+      println!(
+        "cargo:rustc-env=CARGO_BUILTFOR={} os-release",
+        String::from_utf8(name).unwrap()
+      );
     }
     // _ => { println!("cargo:rustc-env=CARGO_BUILTFOR=unknown"); }
     _ => {}
@@ -251,8 +254,8 @@ fn main() {
         assert!(cfg!(not(target_env = "musl")), "didn't recognize musl libc");
         println!("cargo:rustc-env=CARGO_BUILTFOR=unknown_libc");
       }
-    // } else {
-    //  println!("cargo:rustc-env=CARGO_BUILTFOR=libc_info_was_None");
+      // } else {
+      //  println!("cargo:rustc-env=CARGO_BUILTFOR=libc_info_was_None");
     }
   }
 }
