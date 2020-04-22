@@ -104,7 +104,7 @@ jobs:
       run: cargo clippy --all-targets
 
     - name: which
-      run: sh -c 'type -p ls' || type -p ls || echo hi
+      run: sh -c 'type -p ls' || type -p ls || command -v ls || echo bye
 
     - name: Build debug
       if: matrix.config.kind == 'test_debug'
