@@ -58,7 +58,14 @@ pub use time::*;
 #[cfg(test)]
 mod tests {
   #[test]
-  fn it_works() {
-    assert_eq!(2 + 2, 4);
+  fn report_env() {
+    #[cfg(target_os = "linux")]
+    eprintln!("Running under linux");
+    #[cfg(target_env = "gnu")]
+    eprintln!("Running under gnu");
+    #[cfg(target_env = "musl")]
+    eprintln!("Running under musl");
+    #[cfg(target_os = "mac")]
+    eprintln!("Running under mac");
   }
 }
