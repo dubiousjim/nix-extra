@@ -125,7 +125,7 @@ fn version_info() -> Option<(Vec<u8>, Option<Vec<u8>>)> {
 }
 
 fn which(bin: &str) -> Option<Vec<u8>> {
-  handle_output(Command::new("sh").args(&["-c", &format!("type -p {}", bin)]), |bytes| {
+  handle_output(Command::new("sh").args(&["-c", &format!("command -v {}", bin)]), |bytes| {
     Some(pop_newline(bytes))
   })
 }
