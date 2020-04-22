@@ -139,8 +139,10 @@ fn libc_info() -> Option<String> {
 
   which("rustc")
     .and_then(|rustc| {
+      println!("location of rustc={:?}", std::str::from_utf8(&rustc).unwrap()); // FIXME
       let rustc: &std::ffi::OsStr = std::os::unix::ffi::OsStrExt::from_bytes(&rustc);
       handle_output(Command::new("ldd").args(&[rustc]), |bytes| {
+        println!("output of ldd rustc={:?}", std::str::from_utf8(&bytes).unwrap()); // FIXME
         let mut lines = bytes.split(|c| *c == 10 || *c == 13);
         loop {
           match lines.next() {
@@ -155,7 +157,7 @@ fn libc_info() -> Option<String> {
     })
     // if ldd wasn't patched, can skip preceding and just replace libc below with "ldd"
     .and_then(|libc| {
-      println!("libc location={}", std::str::from_utf8(&libc).unwrap()); // FIXME
+      println!("loc of libc={:?}", std::str::from_utf8(&libc).unwrap()); // FIXME
       let libc: &std::ffi::OsStr = std::os::unix::ffi::OsStrExt::from_bytes(&libc);
       handle_output(Command::new(libc).args(&["--version"]), |bytes| {
         println!("output of libc --version=<{}>", std::str::from_utf8(&bytes).unwrap()); // FIXME
