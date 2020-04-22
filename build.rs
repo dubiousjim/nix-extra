@@ -132,10 +132,10 @@ fn which(bin: &str) -> Option<Vec<u8>> {
 
 fn libc_info() -> Option<String> {
   // FIXME
-  handle_output(Command::new("ldd").args(&["--version"]), |bytes| {
+  let _: Option<()> = handle_output(Command::new("ldd").args(&["--version"]), |bytes| {
     println!("output of ldd --version=<{}>", std::str::from_utf8(&bytes).unwrap());
-    Some(Ok(()))
-  }).is_some();
+    None
+  });
 
   which("rustc")
     .and_then(|rustc| {
