@@ -110,7 +110,10 @@ jobs:
 
     - name: Build musl
       if: matrix.config.kind == 'test_musl'
-      run: cargo build -vv --target x86_64-unknown-linux-musl
+      run: |
+        docker ps -a
+        lsoff
+        cargo build -vv --target x86_64-unknown-linux-musl
 
     - name: Build release
       if: matrix.config.kind == 'test_release'
