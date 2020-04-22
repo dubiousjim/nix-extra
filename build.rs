@@ -193,9 +193,9 @@ fn main() {
       println!("cargo:rustc-env=CARGO_BUILTFOR=mac_{}.{}", major, minor);
     }
     Some((name, _)) => {
-      println!("cargo:rustc-env=CARGO_BUILTFOR={} os-release", name);
+      println!("cargo:rustc-env=CARGO_BUILTFOR={} os-release", String::from_utf8(name).unwrap());
     }
-    - => {
+    _ => {
       println!("cargo:rustc-env=CARGO_BUILTFOR=unknown");
     }
   }
