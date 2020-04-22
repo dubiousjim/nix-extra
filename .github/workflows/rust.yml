@@ -106,11 +106,11 @@ jobs:
     - name: Build debug
       if: matrix.config.kind == 'test_debug'
       # TODO make warnings fail?
-      run: cargo build --verbose --all-targets -- --nocapture
+      run: cargo build --verbose --all-targets
 
     - name: Build musl
       if: matrix.config.kind == 'test_musl'
-      run: cargo build --verbose --target x86_64-unknown-linux-musl -- --nocapture
+      run: cargo build --verbose --target x86_64-unknown-linux-musl
 
     - name: Build release
       if: matrix.config.kind == 'test_release'
