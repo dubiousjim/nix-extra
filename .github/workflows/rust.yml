@@ -103,6 +103,9 @@ jobs:
       # TODO make it fail if output? acts like cargo check
       run: cargo clippy --all-targets
 
+    - name: which
+      run: sh -c "type -p rustc"
+
     - name: Build debug
       if: matrix.config.kind == 'test_debug'
       # TODO make warnings fail?
