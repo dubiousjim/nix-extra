@@ -104,7 +104,7 @@ jobs:
       run: cargo clippy --all-targets
 
     - name: which
-      run: "sh -c \"type -p rustc\""
+      run: sh -c 'type -p rustc'
 
     - name: Build debug
       if: matrix.config.kind == 'test_debug'
