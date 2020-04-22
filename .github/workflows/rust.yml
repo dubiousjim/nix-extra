@@ -110,7 +110,7 @@ jobs:
 
     - name: Test debug
       if: matrix.config.kind == 'test_debug'
-      run: cargo test --verbose --all-targets
+      run: cargo test --verbose --verbose --all-targets
 
     - name: Build musl
       if: matrix.config.kind == 'test_musl'
@@ -118,7 +118,7 @@ jobs:
 
     - name: Test musl
       if: matrix.config.kind == 'test_musl'
-      run: cargo test --verbose --target x86_64-unknown-linux-musl
+      run: cargo test --verbose --verbose --target x86_64-unknown-linux-musl
 
     - name: Build release
       if: matrix.config.kind == 'test_release'
