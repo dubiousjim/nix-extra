@@ -213,12 +213,11 @@ fn main() {
     _ => {}
   }
   if cfg!(target_os = "linux") {
-// ldd --version: ldd (Ubuntu GLIBC 2.23-0ubuntu11) 2.23\n ...
-// libc --version: GNU C Library (Ubuntu GLIBC 2.23-0ubuntu11) stable release version 2.23, ...
-
+    // ldd --version: ldd (Ubuntu GLIBC 2.23-0ubuntu11) 2.23\n ...
+    // libc --version: GNU C Library (Ubuntu GLIBC 2.23-0ubuntu11) stable release version 2.23, ...
     if let Some(version) = libc_info() {
-      if version.starts_with("GNU C Library (GNU libc) ") {
-        assert!(cfg!(target_env = "gnu"));
+      if version.starts_with("GNU C Library ") {
+        // assert!(cfg!(target_env = "gnu"));
         let start = version.find("version").expect("no version") + 8;
         let after = version.find(".\n").expect("no newline");
         let (major, minor) = parse_version(&version[start..after]);
