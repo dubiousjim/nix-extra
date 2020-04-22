@@ -126,18 +126,20 @@ fn version_info() -> Option<(Vec<u8>, Option<Vec<u8>>)> {
 
 fn which(bin: &str) -> Option<Vec<u8>> {
   handle_output(Command::new("sh").args(&["-c", &format!("type -p {}", bin)]), |bytes| {
-    eprintln!("which 2 {}", std::str::from_utf8(&bytes).unwrap());
-    eprintln!("which 1 {}", std::str::from_utf8(&bytes).unwrap());
     Some(pop_newline(bytes))
   })
 }
 
 fn libc_info() -> Option<String> {
+  // FIXME
+  handle_output(Command::new("ldd").args(&["--version"]), |bytes| {
+    println!("output of ldd --version=<{}>", std::str::from_utf8(&bytes).unwrap());
+  }).is_some();
+
   which("rustc")
     .and_then(|rustc| {
       let rustc: &std::ffi::OsStr = std::os::unix::ffi::OsStrExt::from_bytes(&rustc);
       handle_output(Command::new("ldd").args(&[rustc]), |bytes| {
-        eprintln!("ldd output={}", std::str::from_utf8(&bytes).unwrap()); // FIXME
         let mut lines = bytes.split(|c| *c == 10 || *c == 13);
         loop {
           match lines.next() {
@@ -152,9 +154,10 @@ fn libc_info() -> Option<String> {
     })
     // if ldd wasn't patched, can skip preceding and just replace libc below with "ldd"
     .and_then(|libc| {
-      eprintln!("libc location={}", std::str::from_utf8(&libc).unwrap()); // FIXME
+      println!("libc location={}", std::str::from_utf8(&libc).unwrap()); // FIXME
       let libc: &std::ffi::OsStr = std::os::unix::ffi::OsStrExt::from_bytes(&libc);
       handle_output(Command::new(libc).args(&["--version"]), |bytes| {
+        println!("output of libc --version=<{}>", std::str::from_utf8(&bytes).unwrap()); // FIXME
         String::from_utf8(bytes).ok()
       })
     })
@@ -183,8 +186,6 @@ fn main() {
     // now crate can test cfg!(feature = "SSL...")
   }
   */
-  eprintln!("alpha");
-  println!("beta");
   println!("cargo:rerun-if-changed=build.rs");
   println!("cargo:rerun-if-changed=src/bytes.rs");
   match version_info() {
