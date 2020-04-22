@@ -1,11 +1,12 @@
 name: Rust
 
-# on: [push, pull_request]
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
+
+# on:
+#   push:
+#     branches: [ master ]
+#   pull_request:
+#     branches: [ master ]
 
 jobs:
   build:
@@ -18,14 +19,16 @@ jobs:
     strategy:
       matrix:
         config:
-          - os: macOS-10.15 # macOS-latest
-            kind: test_release
-          - os: ubuntu-16.04 # also ubuntu-18.04/latest
-            kind: test_release
-          - os: ubuntu-16.04
-            kind: test_debug
           - os: ubuntu-16.04
             kind: lint
+          - os: ubuntu-16.04 # also ubuntu-18.04/latest
+            kind: test_debug
+          - os: ubuntu-18.04
+            kind: test_musl
+          - os: ubuntu-16.04
+            kind: test_release
+          - os: macOS-10.15 # macOS-latest
+            kind: test_release
 
     env:
       CARGO_INCREMENTAL: 0
@@ -35,15 +38,25 @@ jobs:
     # - name: Configure git
     #   run: git config --global core.symlinks true
 
-    - name: Clone repository
-      uses: actions/checkout@v2
+    - name: Setup musl 1
+      if: endsWith(matrix.config.kind, 'musl')
+      uses: davidgraeff/rust-musl-action@master
+
+    - name: Setup musl 2
+      if: endsWith(matrix.config.kind, 'musl')
+      uses: actions-rs/toolchain@master
       with:
-        fetch-depth: 5
+        profile: minimal
+        toolchain: stable # or "1.42.0"
+        target: x86_64-unknown-linux-musl
+        override: true
 
     # - name: Install rust
-    #   uses: hecrj/setup-rust-action@v1
+    #   uses: hecrj/setup-rust-action@master
     #   with:
     #     rust-version: "1.42.0"
+    #     target: x86_64-unknown-linux-musl
+    #     components: a, b
 
     # - name: Install clippy and rustfmt
     #   if: matrix.config.kind == 'lint'
@@ -55,6 +68,12 @@ jobs:
       run: |
         rustc --version
         cargo --version
+        sw_vers 2>/dev/null || ldd --version
+
+    - name: Clone repository
+      uses: actions/checkout@master
+      with:
+        fetch-depth: 5
 
     # - name: Configure cargo data directory
     #   # After this point, all cargo registry and crate data is stored in
@@ -92,6 +111,14 @@ jobs:
     - name: Test debug
       if: matrix.config.kind == 'test_debug'
       run: cargo test --verbose --all-targets
+
+    - name: Build musl
+      if: matrix.config.kind == 'test_musl'
+      run: cargo build --verbose --target x86_64-unknown-linux-musl
+
+    - name: Test musl
+      if: matrix.config.kind == 'test_musl'
+      run: cargo test --verbose --target x86_64-unknown-linux-musl
 
     - name: Build release
       if: matrix.config.kind == 'test_release'
