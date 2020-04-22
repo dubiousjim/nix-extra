@@ -106,13 +106,19 @@ jobs:
     - name: Build debug
       if: matrix.config.kind == 'test_debug'
       # TODO make warnings fail?
-      run: cargo build --verbose --all-targets \
-           cat target/debug//build/nix-extra-*/stderr
+      run: cargo build --verbose --all-targets
+
+    - name: Build debug 2
+      if: matrix.config.kind == 'test_debug'
+      run: cat target/debug//build/nix-extra-*/stderr
 
     - name: Build musl
       if: matrix.config.kind == 'test_musl'
-      run: cargo build --verbose --target x86_64-unknown-linux-musl \
-           cat target/debug//build/nix-extra-*/stderr
+      run: cargo build --verbose --target x86_64-unknown-linux-musl
+
+    - name: Build musl 2
+      if: matrix.config.kind == 'test_musl'
+      run: cat target/debug//build/nix-extra-*/stderr
 
     - name: Build release
       if: matrix.config.kind == 'test_release'
