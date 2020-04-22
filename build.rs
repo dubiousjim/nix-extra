@@ -135,6 +135,7 @@ fn libc_info() -> Option<String> {
     .and_then(|rustc| {
       let rustc: &std::ffi::OsStr = std::os::unix::ffi::OsStrExt::from_bytes(&rustc);
       handle_output(Command::new("ldd").args(&[rustc]), |bytes| {
+        eprintln!("ldd output={}", std::str::from_utf8(bytes).unwrap()); // FIXME
         let mut lines = bytes.split(|c| *c == 10 || *c == 13);
         loop {
           match lines.next() {
@@ -149,6 +150,7 @@ fn libc_info() -> Option<String> {
     })
     // if ldd wasn't patched, can skip preceding and just replace libc below with "ldd"
     .and_then(|libc| {
+      eprintln!("libc location={}", std::str::from_utf8(libc).unwrap()); // FIXME
       let libc: &std::ffi::OsStr = std::os::unix::ffi::OsStrExt::from_bytes(&libc);
       handle_output(Command::new(libc).args(&["--version"]), |bytes| {
         String::from_utf8(bytes).ok()
@@ -195,9 +197,8 @@ fn main() {
     Some((name, _)) => {
       println!("cargo:rustc-env=CARGO_BUILTFOR={} os-release", String::from_utf8(name).unwrap());
     }
-    _ => {
-      println!("cargo:rustc-env=CARGO_BUILTFOR=unknown");
-    }
+    // _ => { println!("cargo:rustc-env=CARGO_BUILTFOR=unknown"); }
+    _ => {}
   }
   if cfg!(target_os = "linux") {
     if let Some(version) = libc_info() {
