@@ -138,17 +138,31 @@ fn libc_info() -> Option<String> {
   });
   */
 
-  which("rustc")
-    .and_then(|rustc| {
-      // println!("location of rustc={:?}", std::str::from_utf8(&rustc).unwrap()); // FIXME
-      let rustc: &std::ffi::OsStr = std::os::unix::ffi::OsStrExt::from_bytes(&rustc);
-      handle_output(Command::new("ldd").args(&[rustc]), |bytes| {
-        // println!("output of ldd rustc={:?}", std::str::from_utf8(&bytes).unwrap()); // FIXME
+  let mut starting = which("rustc");
+
+  if let (Some(rhome), Some(rtoolchain), Ok(target)) = (option_env!("RUSTUP_HOME"), option_env!("RUSTUP_TOOLCHAIN"), std::env::var("TARGET")) {
+    let libdir = format!("{}/toolchains/{}/lib/rustlib/{}/lib", rhome, rtoolchain, target);
+    handle_output(Command::new("sh").args(&["-c", &format!("ls -1t {}/libstd*.[sd]*", libdir)]), |bytes| {
+      let mut lines = bytes.split(|c| *c == 10 || *c == 13);
+      if let Some(first) = lines.next() {
+        starting = Some(first.to_vec());
+      }
+      Some(())
+    });
+  }
+
+  starting
+    .and_then(|starting| {
+      println!("location of starting={:?}", std::str::from_utf8(&starting).unwrap()); // FIXME
+      let starting: &std::ffi::OsStr = std::os::unix::ffi::OsStrExt::from_bytes(&starting);
+      handle_output(Command::new("ldd").args(&[starting]), |bytes| {
+        println!("output of ldd starting={:?}", std::str::from_utf8(&bytes).unwrap()); // FIXME
         let mut lines = bytes.split(|c| *c == 10 || *c == 13);
         loop {
           match lines.next() {
             Some(line) => match get_words(&line, &[1, 3]).and_then(as_pair) {
               Some((u, v)) if u.starts_with(b"libc.") => return Some(v.to_vec()),
+              Some((u, v)) if u.starts_with(b"libc-") => return Some(v.to_vec()),
               _ => (),
             },
             None => return None,
@@ -156,9 +170,8 @@ fn libc_info() -> Option<String> {
         }
       })
     })
-    // if ldd wasn't patched, can skip preceding and just replace libc below with "ldd"
     .and_then(|libc| {
-      // println!("loc of libc={:?}", std::str::from_utf8(&libc).unwrap()); // FIXME
+      println!("loc of libc={:?}", std::str::from_utf8(&libc).unwrap()); // FIXME
       let libc: &std::ffi::OsStr = std::os::unix::ffi::OsStrExt::from_bytes(&libc);
       handle_output(Command::new(libc).args(&["--version"]), |bytes| {
         // println!("output of libc --version=<{}>", std::str::from_utf8(&bytes).unwrap()); // FIXME
@@ -189,8 +202,7 @@ fn main() {
     println!(r#"cargo:rustc-cfg=feature="SSL...""#);
     // now crate can test cfg!(feature = "SSL...")
   }
-  */
-  // for (key, value) in std::env::vars() { println!("{}: {}", key, value); }
+  // FIXME
   if let Some(ld_path) = option_env!("LD_LIBRARY_PATH") {
     for d in ld_path.split(':') {
       println!("LD_LIBRARY_PATH={:?}", d);
@@ -200,8 +212,8 @@ fn main() {
       }
     }
   }
-  // FIXME
-  println!("!@#$%^&*()");
+  for (key, value) in std::env::vars() { println!("{}: {}", key, value); }
+  */
   println!("cargo:rerun-if-changed=build.rs");
   println!("cargo:rerun-if-changed=src/bytes.rs");
   match version_info() {
