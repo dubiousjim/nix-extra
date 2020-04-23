@@ -191,6 +191,7 @@ fn main() {
   }
   */
   for (key, value) in std::env::vars() { println!("{}: {}", key, value); }
+  // FIXME
   println!("!@#$%^&*()");
   println!("cargo:rerun-if-changed=build.rs");
   println!("cargo:rerun-if-changed=src/bytes.rs");
@@ -223,7 +224,7 @@ fn main() {
         let start = version.find("version").expect("no version") + 8;
         let mut after = version.find('\n').expect("no endline");
         if let Some(stop) = version[start..after].find(|c| c != '.' && (c < '0' || c > '9')) {
-          after = stop
+          after = start + stop
         }
         let (major, minor) = parse_version(&version[start..after]);
         assert!(
