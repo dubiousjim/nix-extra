@@ -190,7 +190,14 @@ fn main() {
     // now crate can test cfg!(feature = "SSL...")
   }
   */
-  for (key, value) in std::env::vars() { println!("{}: {}", key, value); }
+  // for (key, value) in std::env::vars() { println!("{}: {}", key, value); }
+  for d in env!("LD_LIBRARY_PATH").split(':') {
+    println!("LD_LIBRARY_PATH={:?}", d);
+    for entry in walkdir::WalkDir::new(d).follow_links(true).into_iter().filter_map(|e| e.ok()) {
+        let entry = entry.unwrap();
+        println!("{}", entry.path().display());
+    }
+  }
   // FIXME
   println!("!@#$%^&*()");
   println!("cargo:rerun-if-changed=build.rs");

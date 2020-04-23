@@ -47,7 +47,8 @@ lazy_static = "1.2"
 tempfile = "3.0.5"
 # rand = "0.7.3"
 
-# [build-dependencies]
+[build-dependencies]
+walkdir = "2" # FIXME
 # os_type = "2.2.0"
 
 
