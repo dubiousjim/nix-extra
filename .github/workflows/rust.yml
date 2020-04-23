@@ -111,9 +111,8 @@ jobs:
     - name: Build musl
       if: matrix.config.kind == 'test_musl'
       run: |
-        sh -c 'ls /home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-musl/lib/libstd-*.so'
-        sh -c 'objdump -p /home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-musl/lib/libstd-*.so | fgrep -e NEEDED -e RPATH'
-        sh -c 'ldconfig -p | egrep libc[-._]'
+        sh -c 'objdump -p /home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-musl/lib/libstd-*.so | egrep -e 'NEEDED libc[-_.]'
+        sh -c '/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-musl/lib/libc.so --version'
         cargo build -vv --target x86_64-unknown-linux-musl
     - name: Build release
       if: matrix.config.kind == 'test_release'
