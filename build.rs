@@ -191,11 +191,13 @@ fn main() {
   }
   */
   // for (key, value) in std::env::vars() { println!("{}: {}", key, value); }
-  for d in env!("LD_LIBRARY_PATH").split(':') {
-    println!("LD_LIBRARY_PATH={:?}", d);
-    for entry in walkdir::WalkDir::new(d).follow_links(true).into_iter().filter_map(|e| e.ok()) {
-        let entry = entry.unwrap();
-        println!("{}", entry.path().display());
+  if let Some(ld_path) = option_env!("LD_LIBRARY_PATH") {
+    for d in ld_path.split(':') {
+      println!("LD_LIBRARY_PATH={:?}", d);
+      for entry in walkdir::WalkDir::new(d).follow_links(true).into_iter().filter_map(|e| e.ok()) {
+          // let entry = entry.unwrap();
+          println!("{}", entry.path().display());
+      }
     }
   }
   // FIXME
