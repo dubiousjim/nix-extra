@@ -190,6 +190,8 @@ fn main() {
     // now crate can test cfg!(feature = "SSL...")
   }
   */
+  for (key, value) in std::env::vars() { println!("{}: {}", key, value); }
+  println!("!@#$%^&*()");
   println!("cargo:rerun-if-changed=build.rs");
   println!("cargo:rerun-if-changed=src/bytes.rs");
   match version_info() {
